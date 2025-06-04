@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entities Checker - Extract and Analyze Webpage Entities</title>
+    <meta name="description" content="Analyze webpage content and extract NLP entities like terms, types, and counts with our online Entities Checker tool.">
+    <meta name="keywords" content="entity extraction, nlp, natural language processing, webpage analysis, entity recognition, online tool">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            margin: 0;
+            color: white;
+        }
+        main {
+            margin: 0 auto;
+            padding: 0 20px;
+            max-width: 960px;
+        }
+        .intro-text {
+            margin-bottom: 2em;
+            text-align: center;
+        }
+        form {
+            margin-bottom: 2em;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        form label {
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+        form input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        form button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        form button:hover {
+            background-color: #2980b9;
+        }
+        #error {
+            color: red;
+            text-align: center;
+            margin-top: 1em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1em;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        footer {
+            text-align: center;
+            padding: 1em 0;
+            margin-top: 20px;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 600px) {
+            body { margin: 1em; }
+            main { padding: 0 10px; }
+            form {
+                padding: 15px;
+            }
+            form input[type="url"],
+            form button {
+                width: 100%;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                border: 1px solid #ccc;
+                margin-bottom: 5px;
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+            td:before {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: bold;
+                text-align: left;
+            }
+             /* Data labels for responsive table */
+            td:nth-of-type(1):before { content: "Term:"; }
+            td:nth-of-type(2):before { content: "Type:"; }
+            td:nth-of-type(3):before { content: "Count:"; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Entities Checker</h1>
+    </header>
+
+    <main>
+        <p>Quickly extract and analyze named entities from any public webpage URL.</p>
+
+        <form id="entityForm">
+            <label for="url">Enter URL:</label>
+            <input type="url" id="url" name="url" placeholder="e.g., https://www.example.com" required>
+            <button type="submit">Check Entities</button>
+        </form>
+
+        <div id="error"></div>
+
+        <table id="results" style="display:none;">
+            <thead>
+                <tr><th>Term</th><th>Type</th><th>Count</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="intro-text">
+            <h2>Analyze Webpage Entities Instantly</h2>
+            <p>Our Entities Checker tool allows you to quickly extract and analyze named entities from any public webpage. Simply enter a URL below to get a detailed report of identified terms, their entity types (e.g., Person, Organization, Location), and their frequency of occurrence.</p>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Entities Checker. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const apiUrl = 'http://localhost:8000/entities';
+        document.getElementById('entityForm').onsubmit = async function(e) {
+            e.preventDefault();
+            document.getElementById('error').textContent = '';
+            document.getElementById('results').style.display = 'none';
+            const url = document.getElementById('url').value;
+            if (!url) return;
+
+            try {
+                // Add loading indicator here if desired
+
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                // Remove loading indicator here if desired
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.detail || 'An error occurred while fetching entities.');
+                }
+
+                const data = await res.json();
+                const tbody = document.querySelector('#results tbody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    document.getElementById('error').textContent = 'No entities found for the provided URL.';
+                } else {
+                     data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        // Add data-label attribute for mobile responsiveness
+                        tr.innerHTML = `<td data-label="Term:">${row.term}</td><td data-label="Type:">${row.entity_type}</td><td data-label="Count:">${row.count}</td>`;
+                        tbody.appendChild(tr);
+                    });
+                    document.getElementById('results').style.display = '';
+                }
+
+            } catch (err) {
+                document.getElementById('error').textContent = `Error: ${err.message}`;
+            }
+        };
+    </script>
+</body>
+</html>
