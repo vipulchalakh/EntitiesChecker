@@ -1,5 +1,5 @@
 import uvicorn
-from backend import app
+from .backend import app
 
 # Export the app for Vercel
 

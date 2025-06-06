@@ -21,22 +21,27 @@ A web application that extracts named entities from web pages using NLP.
 6. Run the application: `python main.py`
 7. Open your browser and navigate to `http://localhost:8000`
 
-## Deployment to Vercel
+## Deployment on Vercel with Python Backend
 
-### Option 1: Deploy from the Vercel Dashboard
+This project is structured to work with Vercel's serverless functions for the Python backend. The backend code is located in the `api/` directory as required by Vercel.
 
-1. Fork or clone this repository to your GitHub account
-2. Log in to [Vercel](https://vercel.com)
-3. Click "New Project"
-4. Import your GitHub repository
-5. Keep the default settings and click "Deploy"
+- **Static files** (HTML, etc.) are in the project root.
+- **Python backend** (FastAPI) is in `api/main.py` and `api/backend.py`.
 
-### Option 2: Deploy with Vercel CLI
+### How it works
+- Vercel serves static files from the root (e.g., `index.html`).
+- API requests to `/api/main` are handled by FastAPI in `api/main.py`.
 
-1. Install the Vercel CLI: `npm i -g vercel`
-2. Run `vercel login` and follow the prompts
-3. Navigate to the project directory
-4. Run `vercel` to deploy
+### Local Development
+To run locally:
+```bash
+cd api
+uvicorn main:app --reload
+```
+
+### Notes
+- Make sure all Python dependencies are listed in `requirements.txt`.
+- The backend expects the `en_core_web_sm` spaCy model to be installed.
 
 ## Project Structure
 
