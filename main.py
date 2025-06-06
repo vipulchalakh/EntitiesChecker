@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
@@ -7,13 +8,16 @@ import spacy
 from collections import Counter
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-import os
 
 app = FastAPI()
 
-# Serve static files from /static
+# Serve static files (css, js, images) from /static
 app.mount("/static", StaticFiles(directory=".", html=True), name="static")
+
+# Serve index.html for the root path
+@app.get("/")
+def read_index():
+    return FileResponse("index.html")
 
 origins = ["*"]
 
@@ -51,11 +55,6 @@ def extract_entities(request: URLRequest):
     counter = Counter(entities)
     report = [EntityReport(term=term, entity_type=etype, count=count) for (term, etype), count in counter.items()]
     return sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))
-
-# Serve index.html for the root path
-@app.get("/")
-def read_index():
-    return FileResponse(os.path.join(os.path.dirname(__file__), "index.html"))
 
 if __name__ == "__main__":
     import uvicorn
