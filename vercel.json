@@ -8,8 +8,8 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.py"
+      "src": "/api/entities",
+      "dest": "/api/entities.py"
     },
     {
       "src": "/(.*)",
