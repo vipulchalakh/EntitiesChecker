@@ -6,234 +6,1738 @@
     <title>Entities Checker - Extract and Analyze Webpage Entities</title>
     <meta name="description" content="Analyze webpage content and extract NLP entities like terms, types, and counts with our online Entities Checker tool.">
     <meta name="keywords" content="entity extraction, nlp, natural language processing, webpage analysis, entity recognition, online tool">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.entitieschecker.com/">
+    <link rel="icon" href="entities checker.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
-            color: #333;
-            line-height: 1.6;
-        }
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1em 0;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        header h1 {
-            margin: 0;
-            color: white;
-        }
-        main {
-            margin: 0 auto;
-            padding: 0 20px;
-            max-width: 960px;
-        }
-        .intro-text {
-            margin-bottom: 2em;
-            text-align: center;
-        }
-        form {
-            margin-bottom: 2em;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        form label {
-            margin-bottom: 0.5em;
-            font-weight: bold;
-        }
-        form input[type="url"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        form button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
-        }
-        form button:hover {
-            background-color: #2980b9;
-        }
-        #error {
-            color: red;
-            text-align: center;
-            margin-top: 1em;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 1em;
-            background-color: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        footer {
-            text-align: center;
-            padding: 1em 0;
-            margin-top: 20px;
-            background-color: #2c3e50;
-            color: white;
-            font-size: 0.9em;
+        :root {
+            --primary-color: #4a8eff;
+            --secondary-color: #8a65ff;
+            --dark-bg: #121214;
+            --card-bg: #1e1e23;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #444;
+            --accent-color: #ff4757; /* Adding accent color for error messages */
         }
 
-        /* Responsive styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Background grid pattern */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(18, 18, 20, 0.97), rgba(18, 18, 20, 0.97)),
+                linear-gradient(90deg, rgba(50, 50, 60, 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(50, 50, 60, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+            z-index: -1;
+        }
+        
+        /* Tabs styling */
+        .results-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            color: #fff;
+        }
+        
+        .tab-btn.active {
+            color: #4a8eff;
+            font-weight: 600;
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #4a8eff;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Chart controls */
+        .chart-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-controls select {
+            padding: 8px 12px;
+            border-radius: 4px;
+            background: #2a2a30;
+            border: 1px solid #444;
+            color: #fff;
+        }
+        
+        #chart-container {
+            height: 400px;
+            margin-bottom: 30px;
+        }
+        
+        /* Insights styling */
+        .insights-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .insight-card {
+            background: rgba(30, 30, 35, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .insight-card h3 {
+            margin-top: 0;
+            color: #4a8eff;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .insight-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .insight-list li {
+            margin-bottom: 12px;
+            padding-left: 5px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #2a2a30;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4a8eff, #8a65ff);
+            border-radius: 3px;
+        }
+        
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background: #1e1e23;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .close-modal:hover {
+            color: #fff;
+        }
+        
+        #modal-entity-name {
+            margin-top: 0;
+            color: #4a8eff;
+        }
+        
+        .entity-info {
+            background: rgba(30, 30, 35, 0.5);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .entity-description, .entity-examples {
+            margin-bottom: 20px;
+        }
+        
+        .entity-examples h4, .entity-description h4 {
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+        
+        /* Details button */
+        .details-btn {
+            background: rgba(74, 142, 255, 0.1);
+            color: #4a8eff;
+            border: 1px solid #4a8eff;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .details-btn:hover {
+            background: rgba(74, 142, 255, 0.2);
+        }
+        
+        /* Export buttons container */
+        .export-buttons-container {
+            margin-bottom: 25px;
+            background: rgba(30, 30, 35, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .export-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .export-title i {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .export-title span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Export buttons */
+        .export-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            justify-content: center;
+            min-width: 180px;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            filter: brightness(1.1);
+        }
+        
+        .export-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .export-btn i {
+            font-size: 1.1rem;
+        }
+        
+        #copy-btn {
+            background: linear-gradient(45deg, #4a8eff, #6a5acd);
+        }
+        
+        #export-btn {
+            background: linear-gradient(45deg, #8a65ff, #4a8eff);
+        }
+        
         @media (max-width: 600px) {
-            body { margin: 1em; }
-            main { padding: 0 10px; }
-            form {
-                padding: 15px;
+            .export-actions {
+                flex-direction: column;
             }
-            form input[type="url"],
-            form button {
-                width: 100%;
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            padding: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            overflow: hidden;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            max-width: 350px;
+            width: auto;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast-content {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            gap: 12px;
+        }
+        
+        .toast i {
+            font-size: 1.5rem;
+        }
+        
+        .toast.success i {
+            color: #28a745;
+        }
+        
+        .toast.error i {
+            color: #dc3545;
+        }
+        
+        .toast span {
+            font-weight: 500;
+        }
+        
+        .toast-progress {
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 100%;
+            animation: progress 3s linear forwards;
+        }
+        
+        .toast.error .toast-progress {
+            background: linear-gradient(90deg, #dc3545, #ff6b6b);
+        }
+        
+        @keyframes progress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--bg-secondary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.8rem;
+            transition: var(--transition-speed);
+        }
+
+        .logo:hover {
+            color: var(--secondary-color);
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-speed);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition-speed);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-out;
+            transition: transform var(--transition-speed);
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        form input[type="url"] {
+            padding: 1rem;
+            border: 2px solid var(--bg-secondary);
+            border-radius: 5px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition-speed);
+        }
+
+        form input[type="url"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3);
+        }
+
+        form button {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-speed);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        form button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        #error {
+            color: var(--accent-color);
+            margin-top: 1rem;
+            font-weight: 500;
+            display: none; /* Hide by default */
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgba(255, 71, 87, 0.1);
+            border-left: 3px solid var(--accent-color);
+        }
+
+        /* Results Table */
+        .results-section {
+            margin-bottom: 3rem;
+            display: none;
+        }
+        
+        #results-container {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-header h2 {
+            color: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--bg-secondary);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tbody tr {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--bg-secondary);
+            transition: var(--transition-speed);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(138, 43, 226, 0.1);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            background-color: var(--bg-secondary);
+            animation: fadeIn 1.4s ease-out;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition-speed);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+        }
+
+        /* SEO Content Section */
+        .seo-content {
+            padding: 4rem 0;
+            background-color: var(--bg-primary);
+            animation: fadeIn 1.6s ease-out;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .content-card {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition-speed);
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .content-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .content-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+        }
+
+        .benefits-list li {
+            display: flex;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .benefits-list li i {
+            color: var(--secondary-color);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            margin-top: 0.3rem;
+        }
+
+        .benefits-list li div h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .benefits-list li div p {
+            color: var(--text-secondary);
+        }
+
+        .cta-container {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .cta-container h3 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-container p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition-speed);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-secondary);
+            padding: 3rem 0 1.5rem;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-column ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-speed);
+        }
+
+        .footer-column ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-column p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            border-radius: 50%;
+            transition: var(--transition-speed);
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--bg-card);
+            color: var(--text-muted);
+        }
+
+        /* Loading Animation */
+        #loader {
+            display: none;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--bg-secondary);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
             }
-            table, thead, tbody, th, td, tr {
+
+            .mobile-menu-btn {
                 display: block;
             }
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
+
+            nav {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background-color: var(--bg-secondary);
+                padding: 2rem;
+                transition: var(--transition-speed);
+                z-index: 1001;
             }
-            tr {
-                border: 1px solid #ccc;
-                margin-bottom: 5px;
-                border-radius: 4px;
-                overflow: hidden;
+
+            nav.active {
+                right: 0;
             }
-            td {
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 50%;
+
+            nav ul {
+                flex-direction: column;
+                margin-top: 2rem;
+            }
+
+            nav ul li {
+                margin: 1rem 0;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Table Responsive */
+        @media (max-width: 600px) {
+            table {
+                border: 0;
+            }
+
+            table thead {
+                display: none;
+            }
+
+            table tr {
+                margin-bottom: 1rem;
+                display: block;
+                border: 1px solid var(--bg-secondary);
+                border-radius: 5px;
+            }
+
+            table td {
+                display: block;
                 text-align: right;
+                padding: 0.75rem;
+                position: relative;
+                border-bottom: 1px solid var(--bg-secondary);
             }
-            td:before {
-                position: absolute;
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
+
+            table td:last-child {
+                border-bottom: 0;
+            }
+
+            table td::before {
                 content: attr(data-label);
-                font-weight: bold;
+                position: absolute;
+                left: 0.75rem;
+                font-weight: 600;
                 text-align: left;
+                color: var(--primary-color);
             }
-             /* Data labels for responsive table */
-            td:nth-of-type(1):before { content: "Term:"; }
-            td:nth-of-type(2):before { content: "Type:"; }
-            td:nth-of-type(3):before { content: "Count:"; }
+        }
+
+        /* Page Transitions */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            z-index: 9999;
+            transform: translateY(100%);
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .page-transition.active {
+            transform: translateY(0);
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Entities Checker</h1>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-brain"></i>
+                    EntitiesChecker
+                </a>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav id="main-nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </header>
 
     <main>
-        <p>Quickly extract and analyze named entities from any public webpage URL.</p>
+        <section class="hero">
+            <div class="container">
+                <h1>Extract Entities from Any Webpage</h1>
+                <p>Our advanced NLP tool analyzes web content and extracts named entities, helping you understand the key elements of any text.</p>
+            </div>
+        </section>
 
-        <form id="entityForm">
-            <label for="url">Enter URL:</label>
-            <input type="url" id="url" name="url" placeholder="e.g., https://www.example.com" required>
-            <button type="submit">Check Entities</button>
-        </form>
+        <section class="form-container" id="entityForm">
+            <div class="container">
+                <form>
+                    <label for="url">Enter a URL to analyze:</label>
+                    <input type="url" id="url" placeholder="https://example.com" required>
+                    <button type="submit">Extract Entities</button>
+                </form>
+                <div id="error"></div>
+                <div id="loader">
+                    <div class="spinner"></div>
+                    <p>Analyzing content...</p>
+                </div>
+            </div>
+        </section>
 
-        <div id="error"></div>
+        <section class="results-section" id="results-section">
+            <div class="container">
+                <div id="results-container" style="display: none;">
+                    <h2>Entity Extraction Results</h2>
+                    <p id="entity-count"></p>
+                    <div class="results-tabs">
+                        <button class="tab-btn active" data-tab="table-view">Table View</button>
+                        <button class="tab-btn" data-tab="chart-view">Chart View</button>
+                        <button class="tab-btn" data-tab="insights-view">Insights</button>
+                    </div>
+                    <div id="export-buttons" style="display: none;" class="export-buttons-container">
+                        <div class="export-title">
+                            <i class="fas fa-download"></i>
+                            <span>Export Options</span>
+                        </div>
+                        <div class="export-actions">
+                            <button id="copy-btn" onclick="copyToClipboard()" class="export-btn" title="Copy data to clipboard">
+                                <i class="fas fa-copy"></i> Copy to Clipboard
+                            </button>
+                            <button id="export-btn" onclick="exportToCSV()" class="export-btn" title="Download as CSV file">
+                                <i class="fas fa-file-csv"></i> Export to CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="tab-content">
+                        <div id="table-view" class="tab-pane active">
+                            <div class="table-container">
+                                <table id="results">
+                                    <thead>
+                                        <tr>
+                                            <th>Term</th>
+                                            <th>Type</th>
+                                            <th>Count</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div id="chart-view" class="tab-pane">
+                            <div class="chart-controls">
+                                <select id="chart-type">
+                                    <option value="bar">Bar Chart</option>
+                                    <option value="pie">Pie Chart</option>
+                                </select>
+                                <select id="chart-group">
+                                    <option value="type">Group by Entity Type</option>
+                                    <option value="frequency">Group by Frequency</option>
+                                </select>
+                            </div>
+                            <div id="chart-container"></div>
+                        </div>
+                        
+                        <div id="insights-view" class="tab-pane">
+                            <div class="insights-container">
+                                <div class="insight-card">
+                                    <h3>Top Entities</h3>
+                                    <div id="top-entities"></div>
+                                </div>
+                                <div class="insight-card">
+                                    <h3>Entity Distribution</h3>
+                                    <div id="entity-distribution"></div>
+                                </div>
+                                <div class="insight-card">
+                                    <h3>Content Analysis</h3>
+                                    <div id="content-analysis"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="entity-details-modal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h3 id="modal-entity-name"></h3>
+                            <div id="modal-entity-content">
+                                <div class="entity-info">
+                                    <p><strong>Type:</strong> <span id="modal-entity-type"></span></p>
+                                    <p><strong>Count:</strong> <span id="modal-entity-count"></span></p>
+                                </div>
+                                <div class="entity-description">
+                                    <h4>What is this entity type?</h4>
+                                    <p id="entity-type-description"></p>
+                                </div>
+                                <div class="entity-examples">
+                                    <h4>Examples in context:</h4>
+                                    <div id="entity-examples-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <table id="results" style="display:none;">
-            <thead>
-                <tr><th>Term</th><th>Type</th><th>Count</th></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <section class="features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Key Features</h2>
+                    <p>Discover what makes our Entities Checker tool powerful and efficient</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Fast Analysis</h3>
+                        <p>Get instant results with our optimized NLP processing engine</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3>Detailed Reports</h3>
+                        <p>View comprehensive entity data with frequency analysis</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Any Website</h3>
+                        <p>Works with any public webpage URL for maximum flexibility</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <div class="intro-text">
-            <h2>Analyze Webpage Entities Instantly</h2>
-            <p>Our Entities Checker tool allows you to quickly extract and analyze named entities from any public webpage. Simply enter a URL below to get a detailed report of identified terms, their entity types (e.g., Person, Organization, Location), and their frequency of occurrence.</p>
-        </div>
-
+        <section class="seo-content">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Unlock the Power of Entity Extraction</h2>
+                    <p>Discover how our advanced NLP technology can transform your content analysis</p>
+                </div>
+                
+                <div class="content-grid">
+                    <div class="content-card">
+                        <h3>What is Entity Extraction?</h3>
+                        <p>Entity extraction, also known as Named Entity Recognition (NER), is a natural language processing technique that automatically identifies and classifies key elements in text into predefined categories. These entities can include names of people, organizations, locations, expressions of times, quantities, monetary values, and more.</p>
+                        <p>Our EntitiesChecker tool leverages state-of-the-art NLP algorithms to provide accurate and comprehensive entity extraction from any webpage, helping you gain valuable insights from unstructured text data.</p>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h3>Applications of Entity Extraction</h3>
+                        <ul class="benefits-list">
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>Content Analysis</h4>
+                                    <p>Understand what topics, people, and organizations are mentioned most frequently in content.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>SEO Optimization</h4>
+                                    <p>Identify key entities to target in your SEO strategy and content creation.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>Competitive Analysis</h4>
+                                    <p>Analyze competitor websites to understand what entities they're focusing on.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <h4>Research & Development</h4>
+                                    <p>Extract relevant entities from research papers and technical documents.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="cta-container">
+                    <h3>Ready to Extract Valuable Insights?</h3>
+                    <p>Try our EntitiesChecker tool today and discover the power of advanced entity extraction.</p>
+                    <a href="#entityForm" class="cta-button">Get Started Now</a>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
-        <p>&copy; 2023 Entities Checker. All rights reserved.</p>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EntitiesChecker</h3>
+                    <p>Advanced NLP tool for entity extraction and analysis from web content.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 EntitiesChecker. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const apiUrl = 'http://localhost:8000/entities';
-        document.getElementById('entityForm').onsubmit = async function(e) {
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('main-nav').classList.toggle('active');
+        });
+
+        // API interaction
+        const apiUrl = '/entities';
+        const entityForm = document.getElementById('entityForm');
+        const loader = document.getElementById('loader');
+        const resultsSection = document.getElementById('results-section');
+        const resultsContainer = document.getElementById('results-container');
+        const entityCount = document.getElementById('entity-count');
+        let entityData = [];
+        let pageContent = "";
+
+        // Entity type descriptions
+        const entityTypeDescriptions = {
+            "PERSON": "Names of people, including fictional characters.",
+            "ORG": "Organizations, companies, institutions, etc.",
+            "GPE": "Geopolitical entities - countries, cities, states.",
+            "LOC": "Non-GPE locations, mountain ranges, bodies of water.",
+            "PRODUCT": "Objects, vehicles, foods, etc. (not services).",
+            "EVENT": "Named events such as hurricanes, battles, wars, sports events, etc.",
+            "WORK_OF_ART": "Titles of books, songs, movies, etc.",
+            "LAW": "Named documents made into laws.",
+            "LANGUAGE": "Any named language.",
+            "DATE": "Absolute or relative dates or periods.",
+            "TIME": "Times smaller than a day.",
+            "PERCENT": "Percentage, including '%'.",
+            "MONEY": "Monetary values, including unit.",
+            "QUANTITY": "Measurements, as of weight or distance.",
+            "ORDINAL": "'first', 'second', etc.",
+            "CARDINAL": "Numerals that do not fall under another type.",
+            "NORP": "Nationalities or religious or political groups.",
+            "FAC": "Buildings, airports, highways, bridges, etc."
+        };
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and panes
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding pane
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+                
+                // If chart view is selected, render the chart
+                if (tabId === 'chart-view' && entityData.length > 0) {
+                    renderChart();
+                }
+                
+                // If insights view is selected, render insights
+                if (tabId === 'insights-view' && entityData.length > 0) {
+                    renderInsights();
+                }
+            });
+        });
+
+        // Chart controls event listeners
+        document.getElementById('chart-type').addEventListener('change', renderChart);
+        document.getElementById('chart-group').addEventListener('change', renderChart);
+
+        entityForm.onsubmit = async function(e) {
             e.preventDefault();
             document.getElementById('error').textContent = '';
-            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            resultsSection.style.display = 'none';
+            loader.style.display = 'block';
+            
             const url = document.getElementById('url').value;
             if (!url) return;
 
             try {
-                // Add loading indicator here if desired
-
+                console.log('Sending request to:', apiUrl);
                 const res = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url })
                 });
 
-                // Remove loading indicator here if desired
+                loader.style.display = 'none';
+                console.log('Response status:', res.status);
 
                 if (!res.ok) {
                     const errorData = await res.json();
                     throw new Error(errorData.detail || 'An error occurred while fetching entities.');
                 }
 
-                const data = await res.json();
+                entityData = await res.json();
+                console.log('Received data:', entityData);
+                
                 const tbody = document.querySelector('#results tbody');
                 tbody.innerHTML = '';
 
-                if (data.length === 0) {
+                if (!entityData || entityData.length === 0) {
                     document.getElementById('error').textContent = 'No entities found for the provided URL.';
+                    document.getElementById('error').style.display = 'block';
                 } else {
-                     data.forEach(row => {
+                    entityData.forEach(row => {
                         const tr = document.createElement('tr');
-                        // Add data-label attribute for mobile responsiveness
-                        tr.innerHTML = `<td data-label="Term:">${row.term}</td><td data-label="Type:">${row.entity_type}</td><td data-label="Count:">${row.count}</td>`;
+                        tr.innerHTML = `
+                            <td data-label="Term:">${row.term}</td>
+                            <td data-label="Type:">${row.entity_type}</td>
+                            <td data-label="Count:">${row.count}</td>
+                            <td data-label="Details:"><button class="details-btn" data-entity="${row.term}" data-type="${row.entity_type}" data-count="${row.count}">View Details</button></td>
+                        `;
                         tbody.appendChild(tr);
                     });
-                    document.getElementById('results').style.display = '';
+                    
+                    // Add event listeners to detail buttons
+                    document.querySelectorAll('.details-btn').forEach(btn => {
+                        btn.addEventListener('click', showEntityDetails);
+                    });
+                    
+                    entityCount.textContent = `Found ${entityData.length} entities`;
+                    resultsSection.style.display = 'block';
+                    resultsContainer.style.display = 'block';
+                    
+                    // Show export buttons with animation
+                    const exportButtons = document.getElementById('export-buttons');
+                    exportButtons.style.display = 'block';
+                    exportButtons.style.opacity = '0';
+                    exportButtons.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        exportButtons.style.transition = 'all 0.5s ease';
+                        exportButtons.style.opacity = '1';
+                        exportButtons.style.transform = 'translateY(0)';
+                    }, 100);
+                    
+                    // Add animation to results
+                    resultsContainer.classList.add('active');
+                    setTimeout(() => {
+                        resultsSection.scrollIntoView({ behavior: 'smooth' });
+                    }, 300);
+                    
+                    // Render insights for the default tab
+                    if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'chart-view') {
+                        renderChart();
+                    }
+                    if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'insights-view') {
+                        renderInsights();
+                    }
                 }
 
             } catch (err) {
+                console.error('Error:', err);
                 document.getElementById('error').textContent = `Error: ${err.message}`;
+                document.getElementById('error').style.display = 'block';
             }
         };
+        
+        // Entity details modal functionality
+        function showEntityDetails(e) {
+            const entity = e.target.getAttribute('data-entity');
+            const type = e.target.getAttribute('data-type');
+            const count = e.target.getAttribute('data-count');
+            
+            document.getElementById('modal-entity-name').textContent = entity;
+            document.getElementById('modal-entity-type').textContent = type;
+            document.getElementById('modal-entity-count').textContent = count;
+            
+            // Set entity type description
+            const description = entityTypeDescriptions[type] || `Entities classified as ${type}`;
+            document.getElementById('entity-type-description').textContent = description;
+            
+            // Show the modal
+            document.getElementById('entity-details-modal').style.display = 'block';
+        }
+        
+        // Close modal when clicking the X
+        document.querySelector('.close-modal').addEventListener('click', () => {
+            document.getElementById('entity-details-modal').style.display = 'none';
+        });
+        
+        // Close modal when clicking outside of it
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('entity-details-modal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Render chart based on selected options
+        function renderChart() {
+            const chartType = document.getElementById('chart-type').value;
+            const groupBy = document.getElementById('chart-group').value;
+            const chartContainer = document.getElementById('chart-container');
+            
+            // Clear previous chart
+            chartContainer.innerHTML = '<canvas id="entity-chart"></canvas>';
+            const ctx = document.getElementById('entity-chart').getContext('2d');
+            
+            let labels, data, backgroundColor;
+            
+            if (groupBy === 'type') {
+                // Group by entity type
+                const entityTypes = {};
+                entityData.forEach(item => {
+                    if (!entityTypes[item.entity_type]) {
+                        entityTypes[item.entity_type] = 0;
+                    }
+                    entityTypes[item.entity_type] += item.count;
+                });
+                
+                labels = Object.keys(entityTypes);
+                data = Object.values(entityTypes);
+            } else {
+                // Group by frequency (top 10)
+                const sortedData = [...entityData].sort((a, b) => b.count - a.count).slice(0, 10);
+                labels = sortedData.map(item => item.term);
+                data = sortedData.map(item => item.count);
+            }
+            
+            // Generate colors
+            backgroundColor = generateColors(labels.length);
+            
+            // Create chart
+            if (chartType === 'bar') {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: groupBy === 'type' ? 'Count by Entity Type' : 'Top Entities',
+                            data: data,
+                            backgroundColor: backgroundColor,
+                            borderColor: backgroundColor.map(color => color.replace('0.6', '1')),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } else {
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColor,
+                            borderColor: backgroundColor.map(color => color.replace('0.6', '1')),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            },
+                            title: {
+                                display: true,
+                                text: groupBy === 'type' ? 'Entity Types Distribution' : 'Top Entities Distribution'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Generate random colors for charts
+        function generateColors(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                const hue = (i * 137.5) % 360;
+                colors.push(`hsla(${hue}, 70%, 60%, 0.6)`);
+            }
+            return colors;
+        }
+        
+        // Render insights
+        function renderInsights() {
+            // Top entities
+            const topEntities = document.getElementById('top-entities');
+            const top5 = [...entityData].sort((a, b) => b.count - a.count).slice(0, 5);
+            
+            topEntities.innerHTML = `
+                <p>The most frequently mentioned entities in this content are:</p>
+                <ul class="insight-list">
+                    ${top5.map(entity => `<li><strong>${entity.term}</strong> (${entity.entity_type}) - mentioned ${entity.count} times</li>`).join('')}
+                </ul>
+            `;
+            
+            // Entity distribution
+            const entityDistribution = document.getElementById('entity-distribution');
+            const typeCount = {};
+            entityData.forEach(item => {
+                if (!typeCount[item.entity_type]) {
+                    typeCount[item.entity_type] = 0;
+                }
+                typeCount[item.entity_type]++;
+            });
+            
+            const sortedTypes = Object.entries(typeCount).sort((a, b) => b[1] - a[1]);
+            
+            entityDistribution.innerHTML = `
+                <p>This content contains ${entityData.length} unique entities across ${Object.keys(typeCount).length} different types:</p>
+                <ul class="insight-list">
+                    ${sortedTypes.map(([type, count]) => `
+                        <li>
+                            <strong>${type}</strong>: ${count} entities (${Math.round(count/entityData.length*100)}%)
+                            <div class="progress-bar">
+                                <div class="progress" style="width: ${Math.round(count/entityData.length*100)}%"></div>
+                            </div>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+            
+            // Content analysis
+            const contentAnalysis = document.getElementById('content-analysis');
+            
+            // Calculate some basic metrics
+            const personCount = entityData.filter(e => e.entity_type === 'PERSON').length;
+            const orgCount = entityData.filter(e => e.entity_type === 'ORG').length;
+            const locCount = entityData.filter(e => e.entity_type === 'GPE' || e.entity_type === 'LOC').length;
+            
+            contentAnalysis.innerHTML = `
+                <p>Based on entity analysis, this content appears to be:</p>
+                <ul class="insight-list">
+                    ${personCount > 5 ? '<li>People-focused with many individual mentions</li>' : ''}
+                    ${orgCount > 5 ? '<li>Organization-centric with multiple company/institution references</li>' : ''}
+                    ${locCount > 5 ? '<li>Location-rich with many geographical references</li>' : ''}
+                    ${entityData.some(e => e.entity_type === 'DATE' || e.entity_type === 'TIME') ? '<li>Time-sensitive with temporal references</li>' : ''}
+                    ${entityData.some(e => e.entity_type === 'MONEY' || e.entity_type === 'PERCENT') ? '<li>Data-driven with numerical and statistical information</li>' : ''}
+                </ul>
+                <p>This analysis can help understand the content's focus and context.</p>
+            `;
+        }
+        
+        // Copy to clipboard function
+        function copyToClipboard() {
+            const table = document.querySelector('#results tbody');
+            const rows = table.querySelectorAll('tr');
+            let text = 'Term,Type,Count\n';
+            
+            rows.forEach(row => {
+                const columns = row.querySelectorAll('td');
+                text += `${columns[0].textContent},${columns[1].textContent},${columns[2].textContent}\n`;
+            });
+            
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    const copyBtn = document.getElementById('copy-btn');
+                    const originalContent = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyBtn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                    
+                    // Show toast notification
+                    showToast('Data copied to clipboard successfully!');
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalContent;
+                        copyBtn.style.background = 'linear-gradient(45deg, #4a8eff, #6a5acd)';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    document.getElementById('error').textContent = 'Failed to copy to clipboard';
+                    document.getElementById('error').style.display = 'block';
+                    showToast('Failed to copy data to clipboard', 'error');
+                });
+        }
+        
+        // Export to CSV function
+        function exportToCSV() {
+            const table = document.querySelector('#results tbody');
+            const rows = table.querySelectorAll('tr');
+            let csv = 'Term,Type,Count\n';
+            
+            rows.forEach(row => {
+                const columns = row.querySelectorAll('td');
+                csv += `"${columns[0].textContent.replace(/"/g, '""')}",`;
+                csv += `"${columns[1].textContent.replace(/"/g, '""')}",`;
+                csv += `"${columns[2].textContent.replace(/"/g, '""')}"\n`;
+            });
+            
+            try {
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'entity_extraction_results.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Visual feedback
+                const exportBtn = document.getElementById('export-btn');
+                const originalContent = exportBtn.innerHTML;
+                exportBtn.innerHTML = '<i class="fas fa-check"></i> Downloaded!';
+                exportBtn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                
+                // Show toast notification
+                showToast('CSV file downloaded successfully!');
+                
+                setTimeout(() => {
+                    exportBtn.innerHTML = originalContent;
+                    exportBtn.style.background = 'linear-gradient(45deg, #8a65ff, #4a8eff)';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to export CSV: ', err);
+                document.getElementById('error').textContent = 'Failed to export data to CSV';
+                document.getElementById('error').style.display = 'block';
+                showToast('Failed to export data to CSV', 'error');
+            }
+        }
+        
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            // Remove existing toasts
+            const existingToasts = document.querySelectorAll('.toast');
+            existingToasts.forEach(toast => toast.remove());
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <div class="toast-progress"></div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Show toast with animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>

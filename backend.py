@@ -9,11 +9,19 @@ from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:8000",
+    "http://localhost:8080",
+    "https://*.vercel.app",  # Allow Vercel preview deployments
+    "https://*.now.sh",      # Allow Vercel deployments (legacy)
+    "*"                     # Allow all origins in production
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

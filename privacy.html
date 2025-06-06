@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Entities Checker</title>
+    <meta name="description" content="EntitiesChecker's privacy policy - how we collect, use, and protect your data.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.entitieschecker.com/privacy.html">
+    <link rel="icon" href="entities checker.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #8A2BE2; /* Purple */
+            --secondary-color: #00BFFF; /* Deep Sky Blue */
+            --accent-color: #FF4500; /* Orange Red */
+            --text-primary: #FFFFFF;
+            --text-secondary: #CCCCCC;
+            --text-muted: #999999;
+            --bg-primary: #121212;
+            --bg-secondary: #1E1E1E;
+            --bg-card: #252525;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animation for page elements */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--bg-secondary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.8rem;
+            transition: var(--transition-speed);
+        }
+
+        .logo:hover {
+            color: var(--secondary-color);
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-speed);
+            position: relative;
+            padding: 5px 0;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition-speed);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Page Content */
+        .page-content {
+            animation: fadeIn 0.8s ease-out;
+            padding: 4rem 0;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Privacy Policy Content */
+        .policy-container {
+            background-color: var(--bg-card);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .policy-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .policy-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .policy-section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--bg-secondary);
+            padding-bottom: 0.5rem;
+        }
+
+        .policy-section h3 {
+            color: var(--secondary-color);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.4rem;
+        }
+
+        .policy-section p, .policy-section ul, .policy-section ol {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .policy-section ul, .policy-section ol {
+            padding-left: 2rem;
+        }
+
+        .policy-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .policy-section a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: var(--transition-speed);
+        }
+
+        .policy-section a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .policy-date {
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .toc h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .toc ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-speed);
+            display: flex;
+            align-items: center;
+        }
+
+        .toc ul li a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .toc ul li a i {
+            margin-right: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-secondary);
+            padding: 3rem 0 1.5rem;
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-column ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition-speed);
+        }
+
+        .footer-column ul li a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            transition: var(--transition-speed);
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--bg-card);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo {
+                margin-bottom: 1rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav ul li {
+                margin: 0.5rem 0;
+            }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            nav {
+                display: none;
+                width: 100%;
+                margin-top: 1rem;
+            }
+
+            nav.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>EntitiesChecker</span>
+                </a>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav id="main-nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-content">
+        <div class="container">
+            <div class="page-header">
+                <h1>Privacy Policy</h1>
+                <p>How we collect, use, and protect your data</p>
+            </div>
+
+            <div class="policy-container">
+                <div class="toc">
+                    <h3>Table of Contents</h3>
+                    <ul>
+                        <li><a href="#introduction"><i class="fas fa-angle-right"></i> Introduction</a></li>
+                        <li><a href="#information-collection"><i class="fas fa-angle-right"></i> Information We Collect</a></li>
+                        <li><a href="#information-use"><i class="fas fa-angle-right"></i> How We Use Your Information</a></li>
+                        <li><a href="#information-sharing"><i class="fas fa-angle-right"></i> Information Sharing and Disclosure</a></li>
+                        <li><a href="#data-security"><i class="fas fa-angle-right"></i> Data Security</a></li>
+                        <li><a href="#user-rights"><i class="fas fa-angle-right"></i> Your Rights</a></li>
+                        <li><a href="#cookies"><i class="fas fa-angle-right"></i> Cookies and Similar Technologies</a></li>
+                        <li><a href="#children"><i class="fas fa-angle-right"></i> Children's Privacy</a></li>
+                        <li><a href="#changes"><i class="fas fa-angle-right"></i> Changes to This Privacy Policy</a></li>
+                        <li><a href="#contact"><i class="fas fa-angle-right"></i> Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div id="introduction" class="policy-section">
+                    <h2>1. Introduction</h2>
+                    <p>Welcome to EntitiesChecker ("we," "our," or "us"). We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you about how we look after your personal data when you visit our website and tell you about your privacy rights and how the law protects you.</p>
+                    <p>This privacy policy applies to all information collected through our website <a href="index.html">EntitiesChecker</a>, and any related services, sales, marketing, or events.</p>
+                    <p>Please read this privacy policy carefully as it will help you understand what we do with the information that we collect.</p>
+                </div>
+
+                <div id="information-collection" class="policy-section">
+                    <h2>2. Information We Collect</h2>
+                    <p>We collect several different types of information for various purposes to provide and improve our service to you.</p>
+                    
+                    <h3>2.1 Personal Data</h3>
+                    <p>While using our Service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you ("Personal Data"). Personally identifiable information may include, but is not limited to:</p>
+                    <ul>
+                        <li>Email address</li>
+                        <li>First name and last name</li>
+                        <li>Usage Data</li>
+                    </ul>
+                    
+                    <h3>2.2 Usage Data</h3>
+                    <p>We may also collect information on how the Service is accessed and used ("Usage Data"). This Usage Data may include information such as your computer's Internet Protocol address (e.g., IP address), browser type, browser version, the pages of our Service that you visit, the time and date of your visit, the time spent on those pages, unique device identifiers, and other diagnostic data.</p>
+                    
+                    <h3>2.3 URLs Submitted for Analysis</h3>
+                    <p>When you use our entity extraction service, you provide us with URLs of webpages you want to analyze. We process the content of these webpages to extract entities but do not store the full content of these pages beyond what is necessary to provide the service.</p>
+                </div>
+
+                <div id="information-use" class="policy-section">
+                    <h2>3. How We Use Your Information</h2>
+                    <p>We use the collected data for various purposes:</p>
+                    <ul>
+                        <li>To provide and maintain our Service</li>
+                        <li>To notify you about changes to our Service</li>
+                        <li>To allow you to participate in interactive features of our Service when you choose to do so</li>
+                        <li>To provide customer support</li>
+                        <li>To gather analysis or valuable information so that we can improve our Service</li>
+                        <li>To monitor the usage of our Service</li>
+                        <li>To detect, prevent and address technical issues</li>
+                    </ul>
+                </div>
+
+                <div id="information-sharing" class="policy-section">
+                    <h2>4. Information Sharing and Disclosure</h2>
+                    <p>We may share your personal information in the following situations:</p>
+                    
+                    <h3>4.1 With Service Providers</h3>
+                    <p>We may share your information with service providers to monitor and analyze the use of our Service, to contact you.</p>
+                    
+                    <h3>4.2 For Business Transfers</h3>
+                    <p>We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</p>
+                    
+                    <h3>4.3 With Your Consent</h3>
+                    <p>We may disclose your personal information for any other purpose with your consent.</p>
+                    
+                    <h3>4.4 Legal Requirements</h3>
+                    <p>We may disclose your information where we are legally required to do so in order to comply with applicable law, governmental requests, a judicial proceeding, court order, or legal process, such as in response to a court order or a subpoena.</p>
+                </div>
+
+                <div id="data-security" class="policy-section">
+                    <h2>5. Data Security</h2>
+                    <p>The security of your data is important to us but remember that no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</p>
+                </div>
+
+                <div id="user-rights" class="policy-section">
+                    <h2>6. Your Rights</h2>
+                    <p>You have certain rights under applicable data protection laws. These may include the right:</p>
+                    <ul>
+                        <li>To access and get a copy of your personal data</li>
+                        <li>To rectify, erase, or restrict the processing of your personal data</li>
+                        <li>To object to processing of your personal data</li>
+                        <li>To data portability</li>
+                        <li>To withdraw consent</li>
+                    </ul>
+                    <p>To exercise any of these rights, please contact us using the contact information provided below.</p>
+                </div>
+
+                <div id="cookies" class="policy-section">
+                    <h2>7. Cookies and Similar Technologies</h2>
+                    <p>We use cookies and similar tracking technologies to track the activity on our Service and hold certain information.</p>
+                    <p>Cookies are files with a small amount of data which may include an anonymous unique identifier. Cookies are sent to your browser from a website and stored on your device. Other tracking technologies are also used such as beacons, tags, and scripts to collect and track information and to improve and analyze our Service.</p>
+                    <p>You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Service.</p>
+                </div>
+
+                <div id="children" class="policy-section">
+                    <h2>8. Children's Privacy</h2>
+                    <p>Our Service does not address anyone under the age of 18 ("Children").</p>
+                    <p>We do not knowingly collect personally identifiable information from anyone under the age of 18. If you are a parent or guardian and you are aware that your Child has provided us with Personal Data, please contact us. If we become aware that we have collected Personal Data from children without verification of parental consent, we take steps to remove that information from our servers.</p>
+                </div>
+
+                <div id="changes" class="policy-section">
+                    <h2>9. Changes to This Privacy Policy</h2>
+                    <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.</p>
+                    <p>We will let you know via email and/or a prominent notice on our Service, prior to the change becoming effective and update the "effective date" at the top of this Privacy Policy.</p>
+                    <p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+                </div>
+
+                <div id="contact" class="policy-section">
+                    <h2>10. Contact Us</h2>
+                    <p>If you have any questions about this Privacy Policy, please contact us:</p>
+                    <ul>
+                        <li>By email: <a href="mailto:privacy@entitieschecker.com">privacy@entitieschecker.com</a></li>
+                        <li>By visiting the contact page on our website: <a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <p class="policy-date">Last updated: November 15, 2023</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>EntitiesChecker</h3>
+                    <p>Advanced NLP tool for entity extraction and analysis from web content.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 EntitiesChecker. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('main-nav').classList.toggle('active');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
