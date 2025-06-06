@@ -6,16 +6,14 @@ import spacy
 from collections import Counter
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:8000",
-    "http://localhost:8080",
-    "https://*.vercel.app",
-    "https://*.now.sh",
-    "*"
-]
+# Serve static files (index.html, etc.) from the root directory
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
+
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,4 +48,8 @@ def extract_entities(request: URLRequest):
     entities = [(ent.text.strip(), ent.label_) for ent in doc.ents if ent.text.strip()]
     counter = Counter(entities)
     report = [EntityReport(term=term, entity_type=etype, count=count) for (term, etype), count in counter.items()]
-    return sorted(report, key=lambda x: (-x.count, x.entity_type, x.term)) 
+    return sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=10000) 
