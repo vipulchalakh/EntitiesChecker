@@ -1,12 +1,33 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
 import spacy
 from collections import Counter
 from typing import List
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Serve static files (css, js, images) from /static
+app.mount("/static", StaticFiles(directory=".", html=True), name="static")
+
+# Serve index.html for the root path
+@app.get("/")
+def read_index():
+    return FileResponse("index.html")
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -37,4 +58,11 @@ def extract_entities(request: URLRequest):
 
 @app.get("/entities")
 def get_entities_info():
-    return {"detail": "Method Not Allowed. Please use POST to this endpoint with a JSON body: {\"url\": \"https://example.com\"}"} 
+    return JSONResponse(
+        status_code=405,
+        content={"detail": "Method Not Allowed. Please use POST to this endpoint with a JSON body: {\"url\": \"https://example.com\"}"}
+    )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=10000) 
