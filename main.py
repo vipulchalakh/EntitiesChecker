@@ -9,6 +9,7 @@ from collections import Counter
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
 import logging
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,7 +35,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-nlp = spacy.load("en_core_web_sm")
+# Load spaCy model with optimized settings
+try:
+    nlp = spacy.load("en_core_web_sm", disable=["parser", "textcat"])
+    logger.info("Successfully loaded spaCy model")
+except Exception as e:
+    logger.error(f"Error loading spaCy model: {str(e)}")
+    raise
 
 class URLRequest(BaseModel):
     url: str
@@ -111,4 +118,5 @@ def get_entities_info():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=10000) 
+    port = int(os.getenv("PORT", 10000))
+    uvicorn.run(app, host="0.0.0.0", port=port) 
