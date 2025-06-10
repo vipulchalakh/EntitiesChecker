@@ -21,11 +21,15 @@
         },
         {
             "src": "/",
-            "dest": "public/index.html"
+            "dest": "/index.html"
+        },
+        {
+            "src": "/index.html",
+            "dest": "/index.html"
         },
         {
             "src": "/(.*)",
-            "dest": "public/$1"
+            "dest": "/$1"
         }
     ],
     "env": {
