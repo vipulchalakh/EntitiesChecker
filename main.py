@@ -1,13 +1,18 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 import requests
 from bs4 import BeautifulSoup
 import spacy
 from collections import Counter
 from typing import List
 from starlette.middleware.cors import CORSMiddleware
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -40,27 +45,68 @@ class EntityReport(BaseModel):
     count: int
 
 @app.post("/entities", response_model=List[EntityReport])
-def extract_entities(request: URLRequest):
+async def extract_entities(request: URLRequest):
     try:
-        resp = requests.get(request.url, timeout=10)
-        resp.raise_for_status()
+        logger.info(f"Processing request for URL: {request.url}")
+        
+        # Validate URL format
+        if not request.url.startswith(('http://', 'https://')):
+            raise HTTPException(status_code=400, detail="Invalid URL format. URL must start with http:// or https://")
+        
+        # Fetch the webpage
+        try:
+            resp = requests.get(request.url, timeout=10)
+            resp.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching URL: {str(e)}")
+            raise HTTPException(status_code=400, detail=f"Error fetching URL: {str(e)}")
+        
+        # Parse the content
+        try:
+            soup = BeautifulSoup(resp.text, "html.parser")
+            for tag in soup(["script", "style"]):
+                tag.decompose()
+            text = soup.body.get_text(separator=" ", strip=True) if soup.body else ""
+            
+            if not text:
+                raise HTTPException(status_code=400, detail="No text content found in the webpage")
+                
+            # Process with spaCy
+            doc = nlp(text)
+            entities = [(ent.text.strip(), ent.label_) for ent in doc.ents if ent.text.strip()]
+            
+            if not entities:
+                return []
+                
+            counter = Counter(entities)
+            report = [EntityReport(term=term, entity_type=etype, count=count) 
+                     for (term, etype), count in counter.items()]
+            
+            # Sort by count (descending), then entity type, then term
+            sorted_report = sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))
+            
+            logger.info(f"Successfully extracted {len(sorted_report)} entities")
+            return JSONResponse(
+                content=sorted_report,
+                headers={"Content-Type": "application/json"}
+            )
+            
+        except Exception as e:
+            logger.error(f"Error processing content: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error processing content: {str(e)}")
+            
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error fetching URL: {e}")
-    soup = BeautifulSoup(resp.text, "html.parser")
-    for tag in soup(["script", "style"]):
-        tag.decompose()
-    text = soup.body.get_text(separator=" ", strip=True) if soup.body else ""
-    doc = nlp(text)
-    entities = [(ent.text.strip(), ent.label_) for ent in doc.ents if ent.text.strip()]
-    counter = Counter(entities)
-    report = [EntityReport(term=term, entity_type=etype, count=count) for (term, etype), count in counter.items()]
-    return sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))
+        logger.error(f"Unexpected error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
 @app.get("/entities")
 def get_entities_info():
     return JSONResponse(
         status_code=405,
-        content={"detail": "Method Not Allowed. Please use POST to this endpoint with a JSON body: {\"url\": \"https://example.com\"}"}
+        content={"detail": "Method Not Allowed. Please use POST to this endpoint with a JSON body: {\"url\": \"https://example.com\"}"},
+        headers={"Content-Type": "application/json"}
     )
 
 if __name__ == "__main__":

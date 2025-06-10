@@ -1369,7 +1369,10 @@
                 console.log('Sending request to:', apiUrl);
                 const res = await fetch(apiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ url })
                 });
 
@@ -1377,20 +1380,34 @@
                 console.log('Response status:', res.status);
 
                 if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.detail || 'An error occurred while fetching entities.');
+                    const errorData = await res.json().catch(() => ({ detail: 'Failed to parse error response' }));
+                    throw new Error(errorData.detail || `HTTP error! status: ${res.status}`);
+                }
+
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server did not return JSON');
                 }
 
                 entityData = await res.json();
                 console.log('Received data:', entityData);
                 
+                if (!Array.isArray(entityData)) {
+                    throw new Error('Invalid response format: expected an array');
+                }
+
                 const tbody = document.querySelector('#results tbody');
                 tbody.innerHTML = '';
 
-                if (!entityData || entityData.length === 0) {
+                if (entityData.length === 0) {
                     document.getElementById('error').textContent = 'No entities found for the provided URL.';
                     document.getElementById('error').style.display = 'block';
                 } else {
+                    resultsSection.style.display = 'block';
+                    resultsContainer.style.display = 'block';
+                    document.getElementById('export-buttons').style.display = 'block';
+                    entityCount.textContent = `Found ${entityData.length} unique entities`;
+                    
                     entityData.forEach(row => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
@@ -1401,46 +1418,15 @@
                         `;
                         tbody.appendChild(tr);
                     });
-                    
-                    // Add event listeners to detail buttons
-                    document.querySelectorAll('.details-btn').forEach(btn => {
-                        btn.addEventListener('click', showEntityDetails);
-                    });
-                    
-                    entityCount.textContent = `Found ${entityData.length} entities`;
-                    resultsSection.style.display = 'block';
-                    resultsContainer.style.display = 'block';
-                    
-                    // Show export buttons with animation
-                    const exportButtons = document.getElementById('export-buttons');
-                    exportButtons.style.display = 'block';
-                    exportButtons.style.opacity = '0';
-                    exportButtons.style.transform = 'translateY(20px)';
-                    
-                    setTimeout(() => {
-                        exportButtons.style.transition = 'all 0.5s ease';
-                        exportButtons.style.opacity = '1';
-                        exportButtons.style.transform = 'translateY(0)';
-                    }, 100);
-                    
-                    // Add animation to results
-                    resultsContainer.classList.add('active');
-                    setTimeout(() => {
-                        resultsSection.scrollIntoView({ behavior: 'smooth' });
-                    }, 300);
-                    
-                    // Render insights for the default tab
-                    if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'chart-view') {
-                        renderChart();
-                    }
-                    if (document.querySelector('.tab-btn.active').getAttribute('data-tab') === 'insights-view') {
-                        renderInsights();
-                    }
-                }
 
-            } catch (err) {
-                console.error('Error:', err);
-                document.getElementById('error').textContent = `Error: ${err.message}`;
+                    // Initialize chart and insights
+                    renderChart();
+                    renderInsights();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loader.style.display = 'none';
+                document.getElementById('error').textContent = error.message || 'An error occurred while fetching entities.';
                 document.getElementById('error').style.display = 'block';
             }
         };
