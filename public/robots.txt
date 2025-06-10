@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://www.entitieschecker.com/sitemap.xml
+Sitemap: https://entitiescheck.org/sitemap.xml
