@@ -10,9 +10,14 @@ from typing import List
 from starlette.middleware.cors import CORSMiddleware
 import logging
 import os
+import sys
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
@@ -37,6 +42,7 @@ app.add_middleware(
 
 # Load spaCy model with optimized settings
 try:
+    logger.info("Attempting to load spaCy model...")
     nlp = spacy.load("en_core_web_sm", disable=["parser", "textcat"])
     logger.info("Successfully loaded spaCy model")
 except Exception as e:
@@ -62,28 +68,38 @@ async def extract_entities(request: URLRequest):
         
         # Fetch the webpage
         try:
+            logger.info("Fetching webpage...")
             resp = requests.get(request.url, timeout=10)
             resp.raise_for_status()
+            logger.info("Successfully fetched webpage")
         except requests.exceptions.RequestException as e:
             logger.error(f"Error fetching URL: {str(e)}")
             raise HTTPException(status_code=400, detail=f"Error fetching URL: {str(e)}")
         
         # Parse the content
         try:
+            logger.info("Parsing webpage content...")
             soup = BeautifulSoup(resp.text, "html.parser")
             for tag in soup(["script", "style"]):
                 tag.decompose()
             text = soup.body.get_text(separator=" ", strip=True) if soup.body else ""
             
             if not text:
+                logger.warning("No text content found in webpage")
                 raise HTTPException(status_code=400, detail="No text content found in the webpage")
+            
+            logger.info(f"Extracted {len(text)} characters of text")
                 
             # Process with spaCy
+            logger.info("Processing text with spaCy...")
             doc = nlp(text)
             entities = [(ent.text.strip(), ent.label_) for ent in doc.ents if ent.text.strip()]
             
             if not entities:
+                logger.info("No entities found")
                 return []
+            
+            logger.info(f"Found {len(entities)} entities")
                 
             counter = Counter(entities)
             report = [EntityReport(term=term, entity_type=etype, count=count) 
@@ -92,20 +108,20 @@ async def extract_entities(request: URLRequest):
             # Sort by count (descending), then entity type, then term
             sorted_report = sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))
             
-            logger.info(f"Successfully extracted {len(sorted_report)} entities")
+            logger.info(f"Successfully processed {len(sorted_report)} unique entities")
             return JSONResponse(
                 content=sorted_report,
                 headers={"Content-Type": "application/json"}
             )
             
         except Exception as e:
-            logger.error(f"Error processing content: {str(e)}")
+            logger.error(f"Error processing content: {str(e)}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Error processing content: {str(e)}")
             
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unexpected error: {str(e)}")
+        logger.error(f"Unexpected error: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
 @app.get("/entities")

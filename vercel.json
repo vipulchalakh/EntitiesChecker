@@ -1,19 +1,8 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "main.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "250mb",
-                "runtime": "python3.9"
-            }
-        },
-        {
-            "src": "*.html",
-            "use": "@vercel/static"
-        }
-    ],
+    "buildCommand": "pip install -r requirements.txt",
+    "outputDirectory": ".",
+    "framework": "fastapi",
     "routes": [
         {
             "src": "/entities",
@@ -23,8 +12,5 @@
             "src": "/(.*)",
             "dest": "/$1"
         }
-    ],
-    "env": {
-        "PYTHONPATH": "."
-    }
+    ]
 } 
