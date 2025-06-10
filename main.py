@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, HttpUrl
 import requests
@@ -21,14 +21,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
-
-# Serve static files (css, js, images) from /static
-app.mount("/static", StaticFiles(directory=".", html=True), name="static")
-
-# Serve index.html for the root path
-@app.get("/")
-def read_index():
-    return FileResponse("index.html")
 
 origins = ["*"]
 
