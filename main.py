@@ -6,11 +6,12 @@ import requests
 from bs4 import BeautifulSoup
 import spacy
 from collections import Counter
-from typing import List
+from typing import List, Dict, Any, Optional
 from starlette.middleware.cors import CORSMiddleware
 import logging
 import os
 import sys
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -48,6 +49,13 @@ class EntityReport(BaseModel):
     term: str
     entity_type: str
     count: int
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "term": self.term,
+            "entity_type": self.entity_type,
+            "count": self.count
+        }
 
 @app.post("/entities", response_model=List[EntityReport])
 async def extract_entities(request: URLRequest):
@@ -101,10 +109,7 @@ async def extract_entities(request: URLRequest):
             sorted_report = sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))
             
             logger.info(f"Successfully processed {len(sorted_report)} unique entities")
-            return JSONResponse(
-                content=sorted_report,
-                headers={"Content-Type": "application/json"}
-            )
+            return JSONResponse(content=[item.to_dict() for item in sorted_report])
             
         except Exception as e:
             logger.error(f"Error processing content: {str(e)}", exc_info=True)
