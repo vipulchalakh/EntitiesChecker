@@ -48,12 +48,14 @@ class URLRequest(BaseModel):
 class EntityReport(BaseModel):
     term: str
     entity_type: str
+    topic_type: str
     count: int
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "term": self.term,
             "entity_type": self.entity_type,
+            "topic_type": self.topic_type,
             "count": self.count
         }
 
@@ -100,6 +102,20 @@ async def extract_entities(request: URLRequest):
             def is_valid_entity(text):
                 words = text.split()
                 return 0 < len(words) <= 3 and len(text) <= 40 and any(c.isalnum() for c in text)
+            # Mapping from spaCy entity type to topic type
+            entity_type_to_topic = {
+                "PERSON": "Society",
+                "ORG": "Organization",
+                "GPE": "Place",
+                "LOC": "Place",
+                "PRODUCT": "Technology/Business",
+                "EVENT": "Society",
+                "WORK_OF_ART": "Arts & Entertainment",
+                "LAW": "Politics",
+                "LANGUAGE": "Society",
+                "NORP": "Society",
+                "FAC": "Place"
+            }
             entities = [
                 (ent.text.strip(), ent.label_)
                 for ent in doc.ents
@@ -113,8 +129,15 @@ async def extract_entities(request: URLRequest):
             logger.info(f"Found {len(entities)} entities")
                 
             counter = Counter(entities)
-            report = [EntityReport(term=term, entity_type=etype, count=count) 
-                     for (term, etype), count in counter.items()]
+            report = [
+                EntityReport(
+                    term=term,
+                    entity_type=etype,
+                    topic_type=entity_type_to_topic.get(etype, "Other"),
+                    count=count
+                )
+                for (term, etype), count in counter.items()
+            ]
             
             # Sort by count (descending), then entity type, then term
             sorted_report = sorted(report, key=lambda x: (-x.count, x.entity_type, x.term))

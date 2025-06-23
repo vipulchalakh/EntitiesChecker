@@ -1096,6 +1096,7 @@
                                         <tr>
                                             <th>Term</th>
                                             <th>Type</th>
+                                            <th>Topic Type</th>
                                             <th>Count</th>
                                             <th>Details</th>
                                         </tr>
@@ -1413,8 +1414,9 @@
                         tr.innerHTML = `
                             <td data-label="Term:">${row.term}</td>
                             <td data-label="Type:">${row.entity_type}</td>
+                            <td data-label="Topic Type:">${row.topic_type}</td>
                             <td data-label="Count:">${row.count}</td>
-                            <td data-label="Details:"><button class="details-btn" data-entity="${row.term}" data-type="${row.entity_type}" data-count="${row.count}">View Details</button></td>
+                            <td data-label="Details:"><button class="details-btn" data-entity="${row.term}" data-type="${row.entity_type}" data-topic="${row.topic_type}" data-count="${row.count}">View Details</button></td>
                         `;
                         tbody.appendChild(tr);
                     });
@@ -1621,11 +1623,11 @@
         function copyToClipboard() {
             const table = document.querySelector('#results tbody');
             const rows = table.querySelectorAll('tr');
-            let text = 'Term,Type,Count\n';
+            let text = 'Term,Type,Topic Type,Count\n';
             
             rows.forEach(row => {
                 const columns = row.querySelectorAll('td');
-                text += `${columns[0].textContent},${columns[1].textContent},${columns[2].textContent}\n`;
+                text += `${columns[0].textContent},${columns[1].textContent},${columns[2].textContent},${columns[3].textContent}\n`;
             });
             
             navigator.clipboard.writeText(text)
@@ -1655,13 +1657,14 @@
         function exportToCSV() {
             const table = document.querySelector('#results tbody');
             const rows = table.querySelectorAll('tr');
-            let csv = 'Term,Type,Count\n';
+            let csv = 'Term,Type,Topic Type,Count\n';
             
             rows.forEach(row => {
                 const columns = row.querySelectorAll('td');
                 csv += `"${columns[0].textContent.replace(/"/g, '""')}",`;
                 csv += `"${columns[1].textContent.replace(/"/g, '""')}",`;
-                csv += `"${columns[2].textContent.replace(/"/g, '""')}"\n`;
+                csv += `"${columns[2].textContent.replace(/"/g, '""')}",`;
+                csv += `"${columns[3].textContent.replace(/"/g, '""')}"\n`;
             });
             
             try {
