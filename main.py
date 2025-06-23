@@ -93,7 +93,15 @@ async def extract_entities(request: URLRequest):
             # Process with spaCy
             logger.info("Processing text with spaCy...")
             doc = nlp(text)
-            entities = [(ent.text.strip(), ent.label_) for ent in doc.ents if ent.text.strip()]
+            # Only include entity types relevant to Google's Knowledge Graph
+            allowed_entity_types = {
+                "PERSON", "ORG", "GPE", "LOC", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE", "NORP", "FAC"
+            }
+            entities = [
+                (ent.text.strip(), ent.label_)
+                for ent in doc.ents
+                if ent.text.strip() and ent.label_ in allowed_entity_types
+            ]
             
             if not entities:
                 logger.info("No entities found")
