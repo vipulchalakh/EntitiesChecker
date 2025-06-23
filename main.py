@@ -97,10 +97,13 @@ async def extract_entities(request: URLRequest):
             allowed_entity_types = {
                 "PERSON", "ORG", "GPE", "LOC", "PRODUCT", "EVENT", "WORK_OF_ART", "LAW", "LANGUAGE", "NORP", "FAC"
             }
+            def is_valid_entity(text):
+                words = text.split()
+                return 0 < len(words) <= 3 and len(text) <= 40 and any(c.isalnum() for c in text)
             entities = [
                 (ent.text.strip(), ent.label_)
                 for ent in doc.ents
-                if ent.text.strip() and ent.label_ in allowed_entity_types
+                if ent.text.strip() and ent.label_ in allowed_entity_types and is_valid_entity(ent.text.strip())
             ]
             
             if not entities:
